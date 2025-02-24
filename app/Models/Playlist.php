@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Playlist extends Model
 {
     protected $fillable = [
-        'spotify_id',
         'user_id',
         'name',
         'image_id'
