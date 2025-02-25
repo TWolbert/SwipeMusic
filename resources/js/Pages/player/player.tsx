@@ -3,6 +3,7 @@ import { PageProps } from '@/types';
 import { api } from '@/utils';
 import 'https://sdk.scdn.co/spotify-player.js';
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 export default function Player({ auth }: PageProps) {
     const [player, setPlayer] = useState<Spotify.Player | null>(null);
@@ -29,6 +30,7 @@ export default function Player({ auth }: PageProps) {
         // Handle player events.
         player.addListener('ready', ({ device_id }) => {
             console.log('Ready with Device ID', device_id);
+            toast.success('Spotify Player is ready.');
             setDeviceId(device_id);
         });
 

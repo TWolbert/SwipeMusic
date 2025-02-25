@@ -12,6 +12,12 @@ class SpotifyController extends Controller
     public function index() {
         
     }
+
+    public function disconnect() {
+        SpotifyUserData::where('user_id', Auth::id())->delete();
+        return redirect('/dashboard');
+    }
+
     /**
      * Display a listing of the resource.
      */
