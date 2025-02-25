@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SpotifyUserData;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -30,10 +31,15 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+        $spotifyUserDataExists = SpotifyUserData::where('user_id', $user?->id)->exists();
+        if ($spotifyUserDataExists) {
+            $user->load('spotifyUserData');
+        }
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user
             ],
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),

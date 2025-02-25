@@ -1,7 +1,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { PageProps } from '@/types';
+import { Head, Link } from '@inertiajs/react';
+import { Spotify } from 'react-bootstrap-icons';
 
-export default function Dashboard() {
+export default function Dashboard({ auth }: PageProps) {
     return (
         <AuthenticatedLayout
             header={
@@ -20,6 +22,20 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
+                {auth.user.spotify_user_data ? <div className="mt-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <div className="overflow-hidden bg-white shadow sm:rounded-lg dark:bg-gray-800">
+                        <p className='flex gap-2 items-center bg-white text-xl font-bold'>
+                            <Spotify className="w-8 h-8 m-4 text-green-500" /> Spotify connected! ({auth.user.spotify_user_data.spotify_id})
+                        </p>
+                    </div>
+                </div> :
+                    <div className="mt-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                        <div className="overflow-hidden bg-white shadow sm:rounded-lg dark:bg-gray-800">
+                            <a href={route('spotify.redirect')} className='flex gap-2 items-center bg-white text-xl font-bold'>
+                                <Spotify className="w-8 h-8 m-4 text-green-500" /> Connect spotify
+                            </a>
+                        </div>
+                    </div>}
             </div>
         </AuthenticatedLayout>
     );

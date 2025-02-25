@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SpotifyController;
+use App\Models\SpotifyUserData;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Socialite\Facades\Socialite;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -24,4 +28,48 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+Route::resource('artists', ArtistController::class);
+
+Route::get('/auth/redirect', function () {
+    return Socialite::driver('spotify')->scopes([
+        'streaming',
+        'user-read-email',
+        'user-read-private',
+    ])->redirect();
+})->middleware('auth')->name('spotify.redirect');   
+
+Route::get('/auth/callback', function () {
+    $user = Socialite::driver('spotify')->user();
+    $expiresAt = now()->addSeconds($user->expiresIn);
+    SpotifyUserData::updateOrCreate(
+        ['user_id' => auth()->id()],
+        [
+            'spotify_id' => $user->id,
+            'spotify_token' => $user->token,
+            'spotify_refresh_token' => $user->refreshToken,
+            'spotify_expires_at' => $expiresAt
+        ]
+    );
+
+    return redirect('/dashboard');
+});
+
+
+Route::get('/player', function () {
+    // Token nog geldig?
+    $accessToken = SpotifyUserData::where('user_id', auth()->id())->first();
+    if (!$accessToken) {
+        return redirect()->route('spotify.redirect');
+    }
+
+    $expiration = $accessToken->spotify_expires_at;
+
+    if (now()->greaterThan($expiration)) {
+        $response = (new SpotifyController())->refreshAccessToken($accessToken->spotify_refresh_token);
+        dd($response);
+    }
+
+    return Inertia::render('player/player');
+})->middleware('auth')->name('player');
+
+require __DIR__ . '/auth.php';

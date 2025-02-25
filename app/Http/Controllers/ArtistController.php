@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreArtistRequest;
 use App\Http\Requests\UpdateArtistRequest;
 use App\Models\Artist;
+use Inertia\Inertia;
 
 class ArtistController extends Controller
 {
@@ -13,7 +14,9 @@ class ArtistController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('artists/index', [
+            'artists' => Artist::all()
+        ]);
     }
 
     /**
