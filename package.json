@@ -36,9 +36,11 @@
         "vite": "^6.0.11"
     },
     "dependencies": {
+        "@types/spotify-web-playback-sdk": "^0.1.19",
         "jotai": "^2.12.1",
         "react-bootstrap-icons": "^1.11.5",
         "react-toastify": "^11.0.3",
+        "spotify-web-sdk": "^0.7.2",
         "vaul": "^1.1.2"
     }
 }

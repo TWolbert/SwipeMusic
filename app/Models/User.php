@@ -45,4 +45,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function spotifyUserData()
+    {
+        return $this->hasOne(SpotifyUserData::class);
+    }
 }
