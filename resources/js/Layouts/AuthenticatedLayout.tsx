@@ -20,7 +20,7 @@ export default function Authenticated({
 
     return (
         <>
-            <Player auth={usePage().props.auth} />
+            <Player auth={usePage().props.auth} ziggy={usePage().props.ziggy} />
             <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
                 <ToastContainer theme={currentTheme} />
                 <nav className="border-b border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800">
