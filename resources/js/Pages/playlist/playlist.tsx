@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { PlayListData } from "@/types";
 import axios from "axios";
 import { useForm } from "@inertiajs/react";
+import type { Playlist } from "@/models";
 
 
 
-export default function Playlist() {
-    const [playlists, setPlaylists] = useState<PlayListData[]>([]);
+export default function Playlist({ playlistList }: { playlistList: Playlist[] }) {
+    const [playlists, setPlaylists] = useState<PlayListData[]>(playlistList);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
     const [image, setImage] = useState<string>("")
     const [imageFile, setImageFile] = useState<string>('')
@@ -50,7 +51,7 @@ export default function Playlist() {
         setDialogOpen(false);
     };
 
-    const setImageData = (e: React.ChangeEvent<HTMLInputElement>) => { 
+    const setImageData = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files![0];
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -62,7 +63,11 @@ export default function Playlist() {
     }
 
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout header={
+            <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                Playlists
+            </h2>
+        }>
             <div className="p-6 ">
                 <Dialog>
                     <DialogTrigger asChild>
@@ -72,7 +77,7 @@ export default function Playlist() {
 
                         </button>
                     </DialogTrigger>
-                    
+
                     {dialogOpen && (
                         <DialogContent className="bg-white text-black p-6 rounded-lg shadow-lg w-60 h-80 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fixed ">
                             <h2 className="text-lg font-semibold">make playlist</h2>
@@ -89,19 +94,19 @@ export default function Playlist() {
                     )}
                 </Dialog>
                 <div className="mt-4">
-                    {playlists.map((playlists, index) => (
+                    {playlists.map((playlist, index) => (
                         <div
                             key={index}
                             className="bg-white text-black p-4 mt-4 rounded-xl w-[350px] flex justify-between items-center"
                         >
                             <div className="p-1">
-                                <p>{playlists.name}</p>
-                                <p>created at{ }</p>
+                                <p>{playlist.name}</p>
+                                <p>created at{}</p>
                             </div>
                             <div className="ml-auto">
                                 <i className="bi bi-share text-xl"></i>
                             </div>
-                            <div className="w-12 h-12 ml-4 bg-gray-300 rounded-full"></div>
+                            <img src={`/image/${playlist.image_id}`} className="w-12 h-12 ml-4 bg-gray-300 rounded-full"></img>
                         </div>
                     ))}
                 </div>

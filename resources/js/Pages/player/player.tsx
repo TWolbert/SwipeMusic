@@ -22,7 +22,6 @@ export function Player({ auth }: PageProps) {
     const [volume, setVolume] = useState(0.5);
     const [currentState, setCurrentState] = useState<Spotify.PlaybackState | null>(null);
 
-    // Initialize the Spotify Player when the token is available.
     window.onSpotifyWebPlaybackSDKReady = () => {
         const token = auth.user.spotify_user_data?.spotify_token;
         if (!token) {
@@ -79,7 +78,6 @@ export function Player({ auth }: PageProps) {
 
         setPlayer(player);
     };
-
     // Update volume on change.
     useEffect(() => {
         if (player) {
@@ -176,11 +174,11 @@ export function Player({ auth }: PageProps) {
                         <span>{formatMsToMinutesAndSeconds(currentTrack.duration_ms)}</span>
                     </div>
                 )
-                :
-                <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 px-4 mt-1">
-                    <span>0:00</span>
-                    <span>0:00</span>
-                </div>
+                    :
+                    <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 px-4 mt-1">
+                        <span>0:00</span>
+                        <span>0:00</span>
+                    </div>
                 }
 
                 {/* Player Controls & Info */}
@@ -194,10 +192,10 @@ export function Player({ auth }: PageProps) {
                                 className="w-16 h-16 object-cover rounded mr-4"
                             />
                         )
-                        :
-                        <div className="w-16 h-16 bg-gray-300 dark:bg-gray-700 rounded mr-4" />
-                        
-                    }
+                            :
+                            <div className="w-16 h-16 bg-gray-300 dark:bg-gray-700 rounded mr-4" />
+
+                        }
                         <div className=' px-2'>
                             <p className="text-base font-medium text-gray-900 dark:text-gray-100 min-w-48 max-w-48 w-48 text-ellipsis overflow-hidden text-nowrap">
                                 {currentTrack ? currentTrack.name : 'No track playing'}
@@ -217,7 +215,7 @@ export function Player({ auth }: PageProps) {
                             onClick={handleTogglePlay}
                             className="px-4 py-2 bg-blue-500 hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800 text-white font-semibold rounded"
                         >
-                            {isPaused ? <PlayFill size={24} /> : <PauseFill size={24}/>}
+                            {isPaused ? <PlayFill size={24} /> : <PauseFill size={24} />}
                         </button>
 
                         {/* Volume */}

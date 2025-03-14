@@ -2,7 +2,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { Spotify, Trash, TrashFill } from 'react-bootstrap-icons';
-import { ToastContainer } from 'react-toastify';
 
 export default function Dashboard({ auth }: PageProps) {
 
