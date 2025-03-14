@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\SpotifyController;
 use App\Models\SpotifyUserData;
 use Illuminate\Foundation\Application;
@@ -71,5 +72,7 @@ Route::get('/player', function () {
 
     return Inertia::render('player/player');
 })->middleware('auth')->name('player');
+
+Route::get('/playlist',[PlaylistController::class,'index'])->name('playlist');
 
 require __DIR__ . '/auth.php';
