@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePlaylistRequest;
 use App\Http\Requests\UpdatePlaylistRequest;
+use App\Models\Image;
 use App\Models\Playlist;
 use Inertia\Inertia;
+use Storage;
 
 class PlaylistController extends Controller
 {
@@ -30,7 +32,25 @@ class PlaylistController extends Controller
      */
     public function store(StorePlaylistRequest $request)
     {
-        //
+        // Get file from request
+        $file = $request->file('image');
+
+        $randomName = uniqid(). '-' . $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
+
+        // Upload to s3
+        Storage::disk('s3')->put('playlist/' . $randomName, $file->get());
+
+        $image = Image::create([
+            's3_url' => "playlist/{$randomName}"
+        ]);
+
+        Playlist::create([
+            'user_id' => auth()->id(),
+            'name' => $request->validated('name'),
+            'image_id' => $image->id
+        ]);
+
+        return redirect()->route('playlist.index');
     }
 
     /**

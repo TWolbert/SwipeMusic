@@ -11,7 +11,7 @@ class StorePlaylistRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return !is_null(auth()->user());
     }
 
     /**
@@ -22,7 +22,8 @@ class StorePlaylistRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'image' => ['required', 'file']
         ];
     }
 }
