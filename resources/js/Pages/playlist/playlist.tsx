@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { PlayListData } from "@/types";
 import axios from "axios";
 import { useForm } from "@inertiajs/react";
+import type { Playlist } from "@/models";
 
 
 
-export default function Playlist() {
-    const [playlists, setPlaylists] = useState<PlayListData[]>([]);
+export default function Playlist({ playlistList }: { playlistList: Playlist[] }) {
+    const [playlists, setPlaylists] = useState<PlayListData[]>(playlistList);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
     const [image, setImage] = useState<string>("")
     const [imageFile, setImageFile] = useState<string>('')
@@ -93,19 +94,19 @@ export default function Playlist() {
                     )}
                 </Dialog>
                 <div className="mt-4">
-                    {playlists.map((playlists, index) => (
+                    {playlists.map((playlist, index) => (
                         <div
                             key={index}
                             className="bg-white text-black p-4 mt-4 rounded-xl w-[350px] flex justify-between items-center"
                         >
                             <div className="p-1">
-                                <p>{playlists.name}</p>
-                                <p>created at{ }</p>
+                                <p>{playlist.name}</p>
+                                <p>created at{}</p>
                             </div>
                             <div className="ml-auto">
                                 <i className="bi bi-share text-xl"></i>
                             </div>
-                            <div className="w-12 h-12 ml-4 bg-gray-300 rounded-full"></div>
+                            <img src={`/image/${playlist.image_id}`} className="w-12 h-12 ml-4 bg-gray-300 rounded-full"></img>
                         </div>
                     ))}
                 </div>

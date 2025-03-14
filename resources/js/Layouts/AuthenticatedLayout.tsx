@@ -3,7 +3,7 @@ import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import { Player } from '@/Pages/player/player';
 import { Link, usePage } from '@inertiajs/react';
-import { PropsWithChildren, ReactNode, useState } from 'react';
+import { PropsWithChildren, ReactNode, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { HouseDoor, Person, BoxArrowRight, Film } from 'react-bootstrap-icons';
 
