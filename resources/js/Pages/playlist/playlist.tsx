@@ -50,7 +50,7 @@ export default function Playlist() {
         setDialogOpen(false);
     };
 
-    const setImageData = (e: React.ChangeEvent<HTMLInputElement>) => { 
+    const setImageData = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files![0];
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -62,7 +62,11 @@ export default function Playlist() {
     }
 
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout header={
+            <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                Dashboard
+            </h2>
+        }>
             <div className="p-6 ">
                 <Dialog>
                     <DialogTrigger asChild>
@@ -72,7 +76,7 @@ export default function Playlist() {
 
                         </button>
                     </DialogTrigger>
-                    
+
                     {dialogOpen && (
                         <DialogContent className="bg-white text-black p-6 rounded-lg shadow-lg w-60 h-80 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fixed ">
                             <h2 className="text-lg font-semibold">make playlist</h2>

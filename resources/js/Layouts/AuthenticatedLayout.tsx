@@ -5,7 +5,7 @@ import { Player } from '@/Pages/player/player';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { HouseDoor, Person, BoxArrowRight } from 'react-bootstrap-icons';
+import { HouseDoor, Person, BoxArrowRight, Film } from 'react-bootstrap-icons';
 
 export default function Authenticated({ header, children }: PropsWithChildren<{ header?: ReactNode }>) {
     const user = usePage().props.auth.user;
@@ -25,6 +25,9 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                     <nav className="flex flex-col space-y-2">
                         <Link href={route('dashboard')} className={`flex justify-center text-text-50 hover:bg-accent-900 p-3 rounded ${route().current('dashboard') ? 'bg-accent-900' : ''}`}>
                             <HouseDoor size={24} />
+                        </Link>
+                        <Link href={route('playlist.index')} className={`flex justify-center text-text-50 hover:bg-accent-900 p-3 rounded ${route().current('playlist.index') ? 'bg-accent-900' : ''}`}>
+                            <Film size={24} />
                         </Link>
                         <Link href={route('profile.edit')} className={`flex justify-center text-text-50 hover:bg-accent-900 p-3 rounded ${route().current('profile.edit') ? 'bg-accent-900' : ''}`}>
                             <Person size={24} />
