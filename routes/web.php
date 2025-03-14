@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\SpotifyController;
 use App\Models\SpotifyUserData;
 use Illuminate\Foundation\Application;
@@ -36,7 +38,7 @@ Route::get('/auth/redirect', function () {
         'user-read-email',
         'user-read-private',
     ])->redirect();
-})->middleware('auth')->name('spotify.redirect');   
+})->middleware('auth')->name('spotify.redirect');
 
 Route::get('/auth/callback', function () {
     $user = Socialite::driver('spotify')->user();
@@ -72,4 +74,7 @@ Route::get('/player', function () {
     return Inertia::render('player/player');
 })->middleware('auth')->name('player');
 
+
+Route::resource('playlist', PlaylistController::class);
+Route::resource('image', ImageController::class);
 require __DIR__ . '/auth.php';
