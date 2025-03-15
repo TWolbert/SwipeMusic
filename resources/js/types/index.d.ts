@@ -20,7 +20,7 @@ export interface PlayListData {
     user_id: number;
     name: string;
     image_id: number;
-
+    created_at: string;
 }
 
 

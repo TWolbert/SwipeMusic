@@ -4,11 +4,10 @@ import { useEffect, useState } from "react";
 import { PlayListData } from "@/types";
 import axios from "axios";
 import { useForm } from "@inertiajs/react";
-import type { Playlist } from "@/models";
 
 
 
-export default function Playlist({ playlistList }: { playlistList: Playlist[] }) {
+export default function Playlist({ playlistList }: { playlistList: PlayListData[] }) {
     const [playlists, setPlaylists] = useState<PlayListData[]>(playlistList);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
     const [image, setImage] = useState<string>("")
@@ -30,7 +29,7 @@ export default function Playlist({ playlistList }: { playlistList: Playlist[] })
 
         const newPlaylist = {
             name: data.name,
-            createdAt: new Date().toLocaleDateString(),
+            created_at: new Date().toLocaleDateString(),
             user_id: 0,
             image_id: 0
         };
@@ -64,52 +63,63 @@ export default function Playlist({ playlistList }: { playlistList: Playlist[] })
 
     return (
         <AuthenticatedLayout header={
-            <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                Playlists
+            <h2 className="text-xl font-semibold leading-tight text-text-800 dark:text-text-200">
+            Playlists
             </h2>
         }>
-            <div className="p-6 ">
-                <Dialog>
-                    <DialogTrigger asChild>
+            <div className="p-6">
+            <Dialog>
+                <DialogTrigger asChild>
+                <button onClick={() => setDialogOpen(true)} className="bg-primary-500 hover:bg-primary-700 rounded-xl text-white p-2 flex items-center gap-2">
+                    <i className="bi bi-plus text-2xl"></i> Add Playlist
+                </button>
+                </DialogTrigger>
 
-                        <button onClick={() => setDialogOpen(true)} className="bg-purple-600 hover:bg-purple-800 rounded-xl text-white p-2 flex items-center gap-2">
-                            <i className="bi bi-plus text-2xl" ></i> add playlist
-
-                        </button>
-                    </DialogTrigger>
-
-                    {dialogOpen && (
-                        <DialogContent className="bg-white text-black p-6 rounded-lg shadow-lg w-60 h-80 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fixed ">
-                            <h2 className="text-lg font-semibold">make playlist</h2>
-                            <form onSubmit={CreatePlaylist}>
-                                <label>playlist name</label>
-                                <input type="text" value={data.name} required onChange={(e) => setData('name', e.target.value)} className="border-pink-400 focus:border-pink-400 rounded-xl "></input>
-                                <label>playlist image</label>
-                                <input type="file" value={imageFile as unknown as string} required onChange={setImageData} className="border-pink-400 focus:border-pink-400 rounded-xl "></input>
-                                <img src={image} alt="" />
-                                <button type="submit" className="bg-purple-600 hover:bg-purple-800 rounded-xl text-white p-2 mt-2">create</button>
-                            </form>
-
-                        </DialogContent>
-                    )}
-                </Dialog>
-                <div className="mt-4">
-                    {playlists.map((playlist, index) => (
-                        <div
-                            key={index}
-                            className="bg-white text-black p-4 mt-4 rounded-xl w-[350px] flex justify-between items-center"
-                        >
-                            <div className="p-1">
-                                <p>{playlist.name}</p>
-                                <p>created at{}</p>
-                            </div>
-                            <div className="ml-auto">
-                                <i className="bi bi-share text-xl"></i>
-                            </div>
-                            <img src={`/image/${playlist.image_id}`} className="w-12 h-12 ml-4 bg-gray-300 rounded-full"></img>
-                        </div>
-                    ))}
+                {dialogOpen && (
+                <DialogContent className="bg-background-300 text-text-900 p-6 rounded-lg shadow-lg w-60 h-80 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fixed">
+                    <h2 className="text-lg font-semibold mb-4">Create Playlist</h2>
+                    <form onSubmit={CreatePlaylist} className="flex flex-col gap-2">
+                    <label className="font-medium">Playlist Name</label>
+                    <input
+                        type="text"
+                        value={data.name}
+                        required
+                        onChange={(e) => setData('name', e.target.value)}
+                        className="border border-primary-500 rounded-xl p-1 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                    />
+                    <label className="font-medium">Playlist Image</label>
+                    <input
+                        type="file"
+                        value={imageFile as unknown as string}
+                        required
+                        onChange={setImageData}
+                        className="border border-primary-500 rounded-xl p-1 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                    />
+                    {image && <img src={image} alt="Playlist Preview" className="rounded-md mt-2" />}
+                    <button type="submit" className="bg-secondary-500 hover:bg-secondary-700 rounded-xl text-white p-2 mt-2">
+                        Create
+                    </button>
+                    </form>
+                </DialogContent>
+                )}
+            </Dialog>
+            <div className="mt-4 grid grid-cols-1 gap-4">
+                {playlists.map((playlist, index) => (
+                <div
+                    key={index}
+                    className="bg-background-100 text-text-900 p-4 rounded-xl flex justify-between items-center shadow-sm"
+                >
+                    <div className="p-1">
+                    <p className="font-bold">{playlist.name}</p>
+                    <p className="text-sm text-text-600">Created at {playlist.created_at}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                    <i className="bi bi-share text-xl text-accent-500"></i>
+                    <img src={`/image/${playlist.image_id}`} alt="Playlist" className="w-12 h-12 bg-background-200 rounded-full" />
+                    </div>
                 </div>
+                ))}
+            </div>
             </div>
         </AuthenticatedLayout>
 

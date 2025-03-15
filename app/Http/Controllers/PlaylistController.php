@@ -16,7 +16,9 @@ class PlaylistController extends Controller
      */
     public function index()
     {
-        return Inertia::render('playlist/playlist');
+        return Inertia::render('playlist/playlist', [
+            'playlistList' => Playlist::where('user_id', auth()->id())->get()
+        ]);
     }
 
     /**

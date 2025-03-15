@@ -14,7 +14,7 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
 
     return (
         <>
-            <Player auth={usePage().props.auth} ziggy={usePage().props.ziggy} />
+            <Player auth={usePage().props.auth} />
             <div className="flex min-h-screen bg-background-500 dark:bg-background-900">
                 <aside className="bg-background-100 dark:bg-background-800 w-16 flex flex-col items-center p-4 h-screen shadow-md">
                     <div className="flex items-center justify-center mb-6">
