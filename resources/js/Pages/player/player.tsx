@@ -1,8 +1,9 @@
+import { useEffect, useState } from 'react';
+import { atom, useAtom } from 'jotai';
 import Authenticated from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
-import { api } from '@/utils';
+import { api, currentStateAtom, currentTrackAtom, deviceIdAtom, isActiveAtom, isPausedAtom, playerAtom, volumeAtom } from '@/utils';
 import 'https://sdk.scdn.co/spotify-player.js';
-import { useEffect, useState } from 'react';
 import { PauseFill, PlayFill } from 'react-bootstrap-icons';
 import { toast } from 'react-toastify';
 
@@ -13,14 +14,28 @@ const formatMsToMinutesAndSeconds = (ms: number): string => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
 
-export function Player({ auth }: PageProps) {
-    const [player, setPlayer] = useState<Spotify.Player | null>(null);
-    const [isPaused, setPaused] = useState(false);
-    const [isActive, setActive] = useState(false);
-    const [currentTrack, setTrack] = useState<Spotify.Track | null>(null);
-    const [deviceId, setDeviceId] = useState<string | null>(null);
-    const [volume, setVolume] = useState(0.5);
-    const [currentState, setCurrentState] = useState<Spotify.PlaybackState | null>(null);
+// Player component with Jotai integration
+export function Player({ auth }: { auth: PageProps['auth'] }) {
+    const [player, setPlayer] = useAtom(playerAtom);
+    const [isPaused, setPaused] = useAtom(isPausedAtom);
+    const [isActive, setActive] = useAtom(isActiveAtom);
+    const [currentTrack, setTrack] = useAtom(currentTrackAtom);
+    const [deviceId, setDeviceId] = useAtom(deviceIdAtom);
+    const [volume, setVolume] = useAtom(volumeAtom);
+    const [currentState, setCurrentState] = useAtom(currentStateAtom);
+    const [isReady, setReady] = useState(false);
+
+    useEffect(() => {
+        // Check if the Spotify Web Playback SDK script is already loaded
+        if (window.Spotify) {
+            const token = auth.user.spotify_user_data?.spotify_token;
+            if (!token) {
+                console.error('No Spotify token available.');
+                return;
+            }
+            return;
+        }
+    }, [auth]);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
         const token = auth.user.spotify_user_data?.spotify_token;
@@ -39,11 +54,14 @@ export function Player({ auth }: PageProps) {
         player.addListener('ready', ({ device_id }) => {
             console.log('Ready with Device ID', device_id);
             toast.success('Spotify Player is ready.');
+            setReady(true);
             setDeviceId(device_id);
         });
 
         player.addListener('not_ready', ({ device_id }) => {
             console.log('Device ID has gone offline', device_id);
+            toast.error('Spotify Player is not ready.');
+            setReady(false);
         });
 
         player.addListener('initialization_error', ({ message }) => {
@@ -72,12 +90,14 @@ export function Player({ auth }: PageProps) {
         // Connect the player.
         player.connect().then(success => {
             if (success) {
+                setVolume(volume);
                 console.log('The Web Playback SDK successfully connected!');
             }
         });
 
         setPlayer(player);
     };
+
     // Update volume on change.
     useEffect(() => {
         if (player) {
@@ -159,27 +179,26 @@ export function Player({ auth }: PageProps) {
 
     return (
         <div className="fixed bottom-0 inset-x-0 flex justify-center">
-            <div className="bg-white dark:bg-gray-900 shadow-lg w-fit">
+            <div className="bg-background-100 dark:bg-background-800 shadow-lg w-fit">
                 {/* Timeline across the top */}
-                <div className="relative h-2 bg-gray-300 dark:bg-gray-700">
+                <div className="relative h-2 bg-background-300 dark:bg-background-700">
                     <div
-                        className="absolute top-0 left-0 h-2 bg-blue-600 dark:bg-blue-500 transition-all duration-200"
+                        className="absolute top-0 left-0 h-2 bg-accent-500 dark:bg-accent-400 transition-all duration-200"
                         style={{ width: `${progressPercentage}%` }}
                     />
                 </div>
                 {/* Timeline time display (left: current time, right: total time) */}
                 {currentTrack ? (
-                    <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 px-4 mt-1">
+                    <div className="flex justify-between text-xs text-text-600 dark:text-text-400 px-4 mt-1">
                         <span>{formatMsToMinutesAndSeconds(currentState?.position ?? 0)}</span>
                         <span>{formatMsToMinutesAndSeconds(currentTrack.duration_ms)}</span>
                     </div>
-                )
-                    :
-                    <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 px-4 mt-1">
+                ) : (
+                    <div className="flex justify-between text-xs text-text-600 dark:text-text-400 px-4 mt-1">
                         <span>0:00</span>
                         <span>0:00</span>
                     </div>
-                }
+                )}
 
                 {/* Player Controls & Info */}
                 <div className="flex items-center justify-between px-4 py-3">
@@ -191,17 +210,15 @@ export function Player({ auth }: PageProps) {
                                 alt="Album Art"
                                 className="w-16 h-16 object-cover rounded mr-4"
                             />
-                        )
-                            :
-                            <div className="w-16 h-16 bg-gray-300 dark:bg-gray-700 rounded mr-4" />
-
-                        }
-                        <div className=' px-2'>
-                            <p className="text-base font-medium text-gray-900 dark:text-gray-100 min-w-48 max-w-48 w-48 text-ellipsis overflow-hidden text-nowrap">
+                        ) : (
+                            <div className="w-16 h-16 bg-background-300 dark:bg-background-700 rounded mr-4" />
+                        )}
+                        <div className="px-2">
+                            <p className="text-base font-medium text-text-900 dark:text-text-100 min-w-48 max-w-48 w-48 text-ellipsis overflow-hidden whitespace-nowrap">
                                 {currentTrack ? currentTrack.name : 'No track playing'}
                             </p>
                             {currentTrack && (
-                                <p className="text-sm text-gray-600 dark:text-gray-400 min-w-48 max-w-48 w-48 text-ellipsis overflow-hidden text-nowrap">
+                                <p className="text-sm text-text-600 dark:text-text-400 min-w-48 max-w-48 w-48 text-ellipsis overflow-hidden whitespace-nowrap">
                                     {currentTrack.artists.map(artist => artist.name).join(', ')}
                                 </p>
                             )}
@@ -213,14 +230,14 @@ export function Player({ auth }: PageProps) {
                         {/* Play/Pause */}
                         <button
                             onClick={handleTogglePlay}
-                            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800 text-white font-semibold rounded"
+                            className="px-4 py-2 bg-primary-500 hover:bg-primary-600 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-semibold rounded"
                         >
                             {isPaused ? <PlayFill size={24} /> : <PauseFill size={24} />}
                         </button>
 
                         {/* Volume */}
                         <div className="flex flex-col items-center">
-                            <label className="text-sm text-gray-700 dark:text-gray-300 mb-1">
+                            <label className="text-sm text-text-700 dark:text-text-300 mb-1">
                                 Volume: {Math.round(volume * 100)}%
                             </label>
                             <input
@@ -237,7 +254,8 @@ export function Player({ auth }: PageProps) {
                         {/* Random Track Button */}
                         <button
                             onClick={getRandomTrack}
-                            className="px-4 py-2 bg-green-500 hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800 text-white font-semibold rounded"
+                            disabled={!isReady}
+                            className="px-4 py-2 bg-secondary-500 hover:bg-secondary-600 dark:bg-secondary-700 dark:hover:bg-secondary-800 text-white font-semibold rounded disabled:opacity-50"
                         >
                             Play Random Track
                         </button>
@@ -246,5 +264,4 @@ export function Player({ auth }: PageProps) {
             </div>
         </div>
     );
-
 }
