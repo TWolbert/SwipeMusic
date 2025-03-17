@@ -10,6 +10,7 @@ import { useForm } from "@inertiajs/react";
 export default function Playlist({ playlistList }: { playlistList: PlayListData[] }) {
     const [playlists, setPlaylists] = useState<PlayListData[]>(playlistList);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
+    const [dialogEditOpen, setDialogEditOpen] = useState<string | null>(null)
     const [image, setImage] = useState<string>("")
     const [imageFile, setImageFile] = useState<string>('')
 
@@ -63,10 +64,16 @@ export default function Playlist({ playlistList }: { playlistList: PlayListData[
 
     const SharePlaylist = () =>{
         console.log("share")
+        //popup met shareid/playlistid en misschien playerid
     }
 
-    const EditPlaylist = () =>{
-        setDialogOpen(true)
+    const EditPlaylist = (id: string) =>{
+        setDialogEditOpen(id);
+        console.log(id)
+    }
+
+    const EditSumbitplaylist = (e:React.FormEvent) =>{
+        e.preventdefault();
     }
 
     return (
@@ -82,7 +89,7 @@ export default function Playlist({ playlistList }: { playlistList: PlayListData[
                     <i className="bi bi-plus text-2xl"></i> Add Playlist
                 </button>
                 </DialogTrigger>
-
+                {/* dit is de dialog voor create playlist */}
                 {dialogOpen && (
                 <DialogContent className="bg-background-300 text-text-900 p-6 rounded-lg shadow-lg w-60 h-80 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fixed">
                     <h2 className="text-lg font-semibold mb-4">Create Playlist</h2>
@@ -114,11 +121,39 @@ export default function Playlist({ playlistList }: { playlistList: PlayListData[
             <div className="mt-4 grid grid-cols-1 gap-4">
                 {playlists.map((playlist, index) => (
                 <div
-                    key={index}
+                    key={playlist.id}
                     className="bg-background-100 text-text-900 p-4 rounded-xl flex justify-between items-center shadow-sm"
                 >
                     <div className="p-1">
-                    <p className="font-bold">{playlist.name} <i onClick={() => EditPlaylist()} className="bi bi-gear text-accent-500"></i></p>
+                    <Dialog open={dialogEditOpen === playlist.id} onOpenChange={(open) => {
+                if (!open) setDialogEditOpen(null); 
+            }}>
+
+                {/* dit is dialog voor edit playlist */}
+                <DialogTrigger>
+        
+                </DialogTrigger>
+
+                <DialogContent className="bg-background-300 text-text-900 p-6 rounded-lg shadow-lg w-60 h-80 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fixed">
+                    <form onSubmit={EditSumbitplaylist}>
+                        <label className="font-medium">Playlist name:</label>
+                        <input
+                        type="text"
+                        value={data.name}
+                        placeholder={playlist.name}
+                        required
+                        onChange={(e) => setData('name', e.target.value)}
+                        className="border border-primary-500 rounded-xl p-1 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                    />
+                     <button type="submit" className="bg-secondary-500 hover:bg-secondary-700 rounded-xl text-white p-2 mt-2">
+                        edit
+                    </button>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+                    <p className="font-bold">{playlist.name} <i onClick={() => EditPlaylist(playlist.id)} className="bi bi-gear text-accent-500"></i></p>
+
                     <p className="text-sm text-text-600">Created at {playlist.created_at}</p>
                     </div>
                     <div className="flex items-center gap-2">
