@@ -39,6 +39,7 @@
         "@radix-ui/react-dialog": "^1.1.6",
         "@types/spotify-web-playback-sdk": "^0.1.19",
         "bootstrap-icons": "^1.11.3",
+        "framer-motion": "^12.5.0",
         "jotai": "^2.12.2",
         "react-bootstrap-icons": "^1.11.5",
         "react-toastify": "^11.0.5",

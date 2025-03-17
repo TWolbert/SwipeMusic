@@ -17,6 +17,7 @@ export interface SpotifyUserData {
 }
 
 export interface PlayListData {
+    id: number;
     user_id: number;
     name: string;
     image_id: number;
