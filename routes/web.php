@@ -41,7 +41,7 @@ Route::get('/auth/redirect', function () {
 })->middleware('auth')->name('spotify.redirect');
 
 Route::get('/auth/callback', function () {
-    $user = Socialite::driver('spotify')->user();
+    $user = Socialite::driver('spotify')->stateless()->user();
     $expiresAt = now()->addSeconds($user->expiresIn);
     SpotifyUserData::updateOrCreate(
         ['user_id' => auth()->id()],
