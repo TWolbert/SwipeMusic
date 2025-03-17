@@ -1,9 +1,18 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
+import { api } from '@/utils';
 import { Head, Link } from '@inertiajs/react';
 import { Spotify, Trash, TrashFill } from 'react-bootstrap-icons';
 
 export default function Dashboard({ auth }: PageProps) {
+
+    const getRandomTrack = () => {
+        api.get('/spotify/random/jazz').then(response => {
+            if (response.status === 200) {
+                console.log(response.data);
+            }
+        });
+    };
 
     return (
         <AuthenticatedLayout
@@ -15,6 +24,7 @@ export default function Dashboard({ auth }: PageProps) {
         >
             <Head title="Dashboard" />
             <div className="py-12">
+                <button onClick={getRandomTrack}>Get random track</button>
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
