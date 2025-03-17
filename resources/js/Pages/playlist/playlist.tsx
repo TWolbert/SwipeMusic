@@ -61,6 +61,14 @@ export default function Playlist({ playlistList }: { playlistList: PlayListData[
         setImageFile(e.target.value);
     }
 
+    const SharePlaylist = () =>{
+        console.log("share")
+    }
+
+    const EditPlaylist = () =>{
+        setDialogOpen(true)
+    }
+
     return (
         <AuthenticatedLayout header={
             <h2 className="text-xl font-semibold leading-tight text-text-800 dark:text-text-200">
@@ -110,11 +118,11 @@ export default function Playlist({ playlistList }: { playlistList: PlayListData[
                     className="bg-background-100 text-text-900 p-4 rounded-xl flex justify-between items-center shadow-sm"
                 >
                     <div className="p-1">
-                    <p className="font-bold">{playlist.name}</p>
+                    <p className="font-bold">{playlist.name} <i onClick={() => EditPlaylist()} className="bi bi-gear text-accent-500"></i></p>
                     <p className="text-sm text-text-600">Created at {playlist.created_at}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                    <i className="bi bi-share text-xl text-accent-500"></i>
+                    <i onClick={() => SharePlaylist()} className="bi bi-share text-xl text-accent-500"></i>
                     <img src={`/image/${playlist.image_id}`} alt="Playlist" className="w-12 h-12 bg-background-200 rounded-full" />
                     </div>
                 </div>
