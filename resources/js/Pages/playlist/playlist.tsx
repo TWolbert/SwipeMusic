@@ -12,7 +12,6 @@ import EditDialog from "./components/EditDialog";
 export default function Playlist({ playlistList }: { playlistList: PlayListData[] }) {
     const [playlists, setPlaylists] = useAtom<PlayListData[]>(playlistsAtom);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
-    const [dialogEditOpen, setDialogEditOpen] = useState<string | null>(null)
     const [image, setImage] = useState<string>("")
     const [imageFile, setImageFile] = useState<string>('')
 
@@ -75,7 +74,6 @@ export default function Playlist({ playlistList }: { playlistList: PlayListData[
 
     const SharePlaylist = () => {
         console.log("share")
-        //popup met shareid/playlistid en misschien playerid
     }
 
     const EditPlaylist = (id: number) => {
