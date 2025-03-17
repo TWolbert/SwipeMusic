@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { atom, useAtom } from 'jotai';
 import Authenticated from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
-import { api, currentStateAtom, currentTrackAtom, deviceIdAtom, isActiveAtom, isPausedAtom, playerAtom, volumeAtom } from '@/utils';
+import { api, currentStateAtom, currentTrackAtom, deviceIdAtom, isActiveAtom, isPausedAtom, isReadyAtom, playerAtom, volumeAtom } from '@/utils';
 import 'https://sdk.scdn.co/spotify-player.js';
 import { PauseFill, PlayFill } from 'react-bootstrap-icons';
 import { toast } from 'react-toastify';
@@ -23,7 +23,7 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
     const [deviceId, setDeviceId] = useAtom(deviceIdAtom);
     const [volume, setVolume] = useAtom(volumeAtom);
     const [currentState, setCurrentState] = useAtom(currentStateAtom);
-    const [isReady, setReady] = useState(false);
+    const [isReady, setReady] = useAtom(isReadyAtom);
 
     useEffect(() => {
         // Check if the Spotify Web Playback SDK script is already loaded

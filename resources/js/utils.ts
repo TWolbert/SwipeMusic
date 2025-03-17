@@ -19,3 +19,4 @@ export const currentTrackAtom = atom<Spotify.Track | null>(null);
 export const deviceIdAtom = atom<string | null>(null);
 export const volumeAtom = atomWithStorage('volume', 0.5);
 export const currentStateAtom = atom<Spotify.PlaybackState | null>(null);
+export const isReadyAtom = atom(false);
