@@ -76,5 +76,6 @@ Route::get('/player', function () {
 
 
 Route::resource('playlist', PlaylistController::class);
+Route::post('playlist/{playlist}/edit', [PlaylistController::class, 'update'])->name('playlist.editp');
 Route::resource('image', ImageController::class);
 require __DIR__ . '/auth.php';
