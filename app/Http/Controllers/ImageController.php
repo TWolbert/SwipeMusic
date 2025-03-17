@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreImageRequest;
 use App\Http\Requests\UpdateImageRequest;
 use App\Models\Image;
+use Illuminate\Support\Facades\Cache;
 use Storage;
 
 class ImageController extends Controller
@@ -38,10 +39,12 @@ class ImageController extends Controller
      */
     public function show(Image $image)
     {
-        // Get temporary url for image
-        $imageUrl = Storage::disk('s3')->temporaryUrl($image->s3_url, now()->addMinutes(5));
+        $cacheKey = 'image_url_' . $image->id;
+        $imageUrl = Cache::remember($cacheKey, 300, function () use ($image) {
+            // Get temporary url for image
+            return Storage::disk('s3')->temporaryUrl($image->s3_url, now()->addMinutes(5));
+        });
 
-        // Return the image url
         return redirect($imageUrl);
     }
 

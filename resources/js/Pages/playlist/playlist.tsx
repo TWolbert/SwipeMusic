@@ -7,6 +7,7 @@ import { useForm } from "@inertiajs/react";
 import CreateDialog from "./components/CreateDialog";
 import { useAtom } from "jotai";
 import { playlistsAtom } from "@/utils";
+import EditDialog from "./components/EditDialog";
 
 export default function Playlist({ playlistList }: { playlistList: PlayListData[] }) {
     const [playlists, setPlaylists] = useAtom<PlayListData[]>(playlistsAtom);
@@ -168,10 +169,10 @@ export default function Playlist({ playlistList }: { playlistList: PlayListData[
                             className="bg-background-100 text-text-900 p-4 rounded-xl flex justify-between items-center shadow-sm"
                         >
                             <div className="p-1">
-                                <p className="font-bold">
+                                <div className="font-bold flex items-center gap-2">
                                     {playlist.name}{" "}
-                                    <i onClick={() => EditPlaylist(playlist.id)} className="bi bi-gear text-accent-500 cursor-pointer"></i>
-                                </p>
+                                    <EditDialog playlist={playlist} />
+                                </div>
                                 <p className="text-sm text-text-600">Created at {playlist.created_at}</p>
                             </div>
                             <div className="flex items-center gap-2">

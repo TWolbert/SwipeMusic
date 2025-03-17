@@ -11,7 +11,7 @@ class UpdatePlaylistRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return !is_null(auth()->user());
     }
 
     /**
@@ -22,8 +22,8 @@ class UpdatePlaylistRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'image' => ['required', 'file']
+            'name' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'file']
         ];
     }
 }
