@@ -76,7 +76,23 @@ class PlaylistController extends Controller
      */
     public function update(UpdatePlaylistRequest $request, Playlist $playlist)
     {
-        //
+        $file = $request->file('image');
+
+        $randomName = uniqid(). '-' . $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
+
+        // Upload to s3
+        Storage::disk('s3')->put('playlist/' . $randomName, $file->get());
+
+        $image = Image::create([
+            's3_url' => "playlist/{$randomName}"
+        ]);
+
+        $playlist->update([
+            'name' => $request->validated('name'),
+            'image_id' => $image->id
+        ]);
+
+        return redirect()->route('playlist.index');
     }
 
     /**
