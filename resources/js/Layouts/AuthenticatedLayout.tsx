@@ -16,7 +16,7 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
         <>
             <Player auth={usePage().props.auth} />
             <div className="flex min-h-screen bg-background-500 dark:bg-background-900">
-                <aside className="bg-background-100 dark:bg-background-800 w-16 flex flex-col items-center p-4 h-screen shadow-md">
+                <aside className="fixed top-0 left-0 h-full bg-background-100 dark:bg-background-800 w-16 flex flex-col items-center p-4 shadow-md">
                     <div className="flex items-center justify-center mb-6">
                         <Link href="/">
                             <ApplicationLogo className="h-10 w-auto fill-current text-text-50" />
@@ -39,7 +39,7 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                 </aside>
 
                 {/* Main Content */}
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col ml-16">
                     <ToastContainer theme={currentTheme} />
                     {header && (
                         <header className="bg-background-100 shadow dark:bg-background-800 p-6">
