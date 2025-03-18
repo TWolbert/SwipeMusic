@@ -39,6 +39,7 @@ export interface Playlist extends Model {
     name: string;
     image_id: number;
     image?: Image;  
+    songs: PlaylistSong[]
 }
 
 export interface Song extends Model, HasSpotifyID { 

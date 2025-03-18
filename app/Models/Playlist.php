@@ -19,11 +19,11 @@ class Playlist extends Model
 
     public function songs()
     {
-        return $this->hasMany(Song::class);
+        return $this->hasMany(PlaylistSong::class);
     }
 
     public function image()
     {
-        return $this->hasOne(Image::class);
+        return $this->belongsTo(Image::class);
     }
 }
