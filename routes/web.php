@@ -4,6 +4,7 @@ use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\PlaylistSongController;
 use App\Http\Controllers\SpotifyController;
 use App\Models\SpotifyUserData;
 use Illuminate\Foundation\Application;
@@ -76,6 +77,8 @@ Route::get('/player', function () {
 
 
 Route::resource('playlist', PlaylistController::class);
+Route::resource('playlistsong',PlaylistSongController::class);
+Route::get('playlists/get', [PlaylistController::class, 'getPlaylist'])->name('playlist.get');
 Route::post('playlist/{playlist}/edit', [PlaylistController::class, 'update'])->name('playlist.editp');
 Route::resource('image', ImageController::class);
 require __DIR__ . '/auth.php';
