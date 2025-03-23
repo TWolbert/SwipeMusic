@@ -21,6 +21,13 @@ class PlaylistController extends Controller
         ]);
     }
 
+    public function getPlaylist()
+    {
+        $playlists = Playlist::where('user_id', auth()->id())->get();
+
+        return response()->json($playlists);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -37,7 +44,7 @@ class PlaylistController extends Controller
         // Get file from request
         $file = $request->file('image');
 
-        $randomName = uniqid(). '-' . $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
+        $randomName = uniqid() . '-' . $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
 
         // Upload to s3
         Storage::disk('s3')->put('playlist/' . $randomName, $file->get());
@@ -77,11 +84,11 @@ class PlaylistController extends Controller
     public function update(UpdatePlaylistRequest $request, Playlist $playlist)
     {
         $data = [];
-        
+
         if ($request->has('name')) {
             $data['name'] = $request->validated('name');
         }
-        
+
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $randomName = uniqid() . '-' . $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
@@ -92,7 +99,7 @@ class PlaylistController extends Controller
             $data['image_id'] = $image->id;
         }
         $playlist->update($data);
-        
+
         return redirect()->route('playlist.index');
     }
 

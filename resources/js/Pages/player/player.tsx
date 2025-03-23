@@ -6,6 +6,10 @@ import { api, currentStateAtom, currentTrackAtom, deviceIdAtom, isActiveAtom, is
 import 'https://sdk.scdn.co/spotify-player.js';
 import { PauseFill, PlayFill } from 'react-bootstrap-icons';
 import { toast } from 'react-toastify';
+import { Dropdown } from 'react-bootstrap';
+import axios from 'axios';
+import { useForm } from "@inertiajs/react";
+
 
 // Helper to format ms into mm:ss
 const formatMsToMinutesAndSeconds = (ms: number): string => {
@@ -15,7 +19,7 @@ const formatMsToMinutesAndSeconds = (ms: number): string => {
 };
 
 // Player component with Jotai integration
-export function Player({ auth }: { auth: PageProps['auth'] }) {
+export function Player({ auth  }: { auth: PageProps['auth']}) {
     const [player, setPlayer] = useAtom(playerAtom);
     const [isPaused, setPaused] = useAtom(isPausedAtom);
     const [isActive, setActive] = useAtom(isActiveAtom);
@@ -24,6 +28,17 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
     const [volume, setVolume] = useAtom(volumeAtom);
     const [currentState, setCurrentState] = useAtom(currentStateAtom);
     const [isReady, setReady] = useAtom(isReadyAtom);
+
+    const [showDropDown, setShowDropDown] = useState(false);
+    const [playlist, setPlaylist] = useState<any>();
+    const [playlistId,setPlaylistId] = useState<number>();
+    const [songId,setSongId] = useState<number>();
+
+     const { data, setData, post, processing, errors, reset } = useForm({
+            playlist_id: '',
+            song_id: '' 
+        });
+
 
     useEffect(() => {
         // Check if the Spotify Web Playback SDK script is already loaded
@@ -177,6 +192,39 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
         ? ((currentState?.position ?? 0) / currentTrack.duration_ms) * 100
         : 0;
 
+    //toggle dropdown
+    const toggleDropdown = () => {
+        setShowDropDown(!showDropDown);
+    };
+
+    //add to playlist
+    const addToPlaylist = (id: number) => {
+        // route('playlistsong.create',)
+        // post(route('playlistsong.store'),{
+
+        // })
+        setPlaylistId(id)
+        console.log("playlistId",playlistId);
+        //ik moet het sturen naar playlist_songs
+        //ik moet playlist_id, song_id meegeven
+    };
+    
+    const loadPlaylists = async () => {
+        try {
+            const response = await axios.get(route('playlist.get'))
+    
+            setPlaylist(response.data); 
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        loadPlaylists();
+    }, []);
+
+
+
     return (
         <div className="fixed bottom-0 inset-x-0 flex justify-center">
             <div className="bg-background-100 dark:bg-background-800 shadow-lg w-fit">
@@ -227,6 +275,38 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
 
                     {/* Control Buttons & Volume */}
                     <div className="flex items-center gap-4">
+
+                        {/* dropdown */}
+
+                        <div className="relative">
+                            <Dropdown show={showDropDown} onToggle={toggleDropdown}>
+                                <Dropdown.Toggle variant="success" id="dropdown-basic" className="text-white">
+                                    Voeg aan playlist toe
+                                </Dropdown.Toggle>
+
+                                {showDropDown && (
+                                    <Dropdown.Menu className="absolute bottom-full mb-2 w-48 shadow-lg bg-background-100 rounded block">
+                                        {/* Controleer of de playlist data geladen is */}
+                                        {playlist.length > 0 ? (
+                                            playlist.map((playlistItem) => (
+                                                <Dropdown.Item
+                                                    key={playlistItem.id}
+                                                    onClick={() => addToPlaylist(playlistItem.id)}
+                                                    className="pl-1 hover:bg-gray-500 block "
+                                                >
+                                                    {playlistItem.name}
+                                                </Dropdown.Item>
+                                            ))
+                                        ) : (
+                                            <Dropdown.Item disabled>Geen playlists beschikbaar</Dropdown.Item>
+                                        )}
+                                    </Dropdown.Menu>
+                                )}
+                            </Dropdown>
+                        </div>
+
+
+
                         {/* Play/Pause */}
                         <button
                             onClick={handleTogglePlay}
