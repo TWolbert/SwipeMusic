@@ -44,6 +44,7 @@ class SpotifyController extends Controller
         // Make the request using Laravel's HTTP client with the Bearer token
         $response = Http::withToken($accessToken)->get($endpoint, $params);
 
+
         // Check if the request failed and return an error response if so
         if ($response->failed()) {
             return response()->json(['error' => 'Spotify API request failed.'], $response->status());
@@ -66,7 +67,7 @@ class SpotifyController extends Controller
         return response()->json([
             'track' => $randomTrack['name'],
             'artists' => implode(', ', $artistNames),
-            'url' => $randomTrack['external_urls']['spotify']
+            'url' => $randomTrack['uri']
         ]);
     }
 
