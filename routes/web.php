@@ -55,7 +55,7 @@ Route::get('/auth/callback', function () {
     );
 
     return redirect('/dashboard');
-});
+})->middleware('auth')->name('spotify.callback');
 
 
 Route::get('/player', function () {

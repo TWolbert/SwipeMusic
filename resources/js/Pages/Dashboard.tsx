@@ -23,34 +23,28 @@ export default function Dashboard({ auth }: PageProps) {
             }
         >
             <Head title="Dashboard" />
-            <div className="py-12">
-                <button onClick={getRandomTrack}>Get random track</button>
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
-                        <div className="p-6 text-gray-900 dark:text-gray-100">
-                            You're logged in!
-                        </div>
-                    </div>
+            <div className="">
+                <div className=' text-text-900 dark:text-text-50'>
+                    {!auth.user.spotify_user_data ? (
+                        <a href='/auth/redirect'>
+                            <button className="px-4 py-2 bg-green-500 rounded">
+                                Connect to Spotify
+                            </button>
+                        </a>
+                    ) : (
+                        <>
+                            <span>
+                                Spotify ID: {auth.user.spotify_user_data.spotify_id}
+                            </span>
+                            <Link href={route('spotify.disconnect')}>
+                                <button className="px-4 py-2 bg-red-500 rounded text-white">
+                                    Disconnect
+                                </button>
+                            </Link>
+                        </>
+                    )}
                 </div>
-                {auth.user.spotify_user_data ? <div className="mt-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-background-500 shadow sm:rounded-lg">
-                        <div className="flex gap-2 items-center bg-background-500 text-xl text-text-100 font-bold justify-between">
-                            <div className="flex items-center gap-2">
-                                <Spotify className="w-8 h-8 m-4 text-text-100" /> Spotify connected! ({auth.user.spotify_user_data.spotify_id})
-                            </div>
-                            <a href={route('spotify.disconnect')} className="flex gap-2 items-center bg-background-500 pr-5 text-xl text-text-100 font-bold">
-                                <TrashFill className="w-8 h-8 m-4 text-text" /> Disconnect spotify
-                            </a>
-                        </div>
-                    </div>
-                </div> :
-                    <div className="mt-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-                        <div className="overflow-hidden bg-background-500 shadow sm:rounded-lg">
-                            <a href={route('spotify.redirect')} className='flex gap-2 items-center bg-background-500 text-xl text-text-100 font-bold'>
-                                <Spotify className="w-8 h-8 m-4 text-green-500" /> Connect spotify
-                            </a>
-                        </div>
-                    </div>}
+
             </div>
         </AuthenticatedLayout>
     );
