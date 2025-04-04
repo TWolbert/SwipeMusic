@@ -25,10 +25,10 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t teunwolbert/wlbt-panel:${{ env.hash }} .
-          docker tag teunwolbert/wlbt-panel:${{ env.hash }} teunwolbert/wlbt-panel:latest
+          docker build -t teunwolbert/swipe-music:${{ env.hash }} .
+          docker tag teunwolbert/swipe-music:${{ env.hash }} teunwolbert/swipe-music:latest
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push teunwolbert/wlbt-panel:${{ env.hash }}
-          docker push teunwolbert/wlbt-panel:latest
+          docker push teunwolbert/swipe-music:${{ env.hash }}
+          docker push teunwolbert/swipe-music:latest
