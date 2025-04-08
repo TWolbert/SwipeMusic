@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@radix-ui/react-dialog"
 import { useEffect, useState } from "react";
 import { PlayListData } from "@/types";
 import axios from "axios";
-import { router, useForm } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
 import CreateDialog from "./components/CreateDialog";
 import { useAtom } from "jotai";
 import { playlistsAtom } from "@/utils";
@@ -122,11 +122,6 @@ export default function Playlist({ playlistList }: { playlistList: PlayListData[
         });
     };
 
-    const SongInPlaylist = (id:number) =>{
-       router.visit(route('playlist.show',{id}))
-        console.log({id});
-    };
-
     return (
         <AuthenticatedLayout header={
             <h2 className="text-xl font-semibold leading-tight text-text-800 dark:text-text-200">
@@ -167,14 +162,11 @@ export default function Playlist({ playlistList }: { playlistList: PlayListData[
                     )}
                 </Dialog>
 
-                {/* playlists  */}
-
                 <div className="mt-4 grid grid-cols-1 gap-4">
                     {playlists.map((playlist) => (
                         <div
                             key={playlist.id}
                             className="bg-background-100 text-text-900 p-4 rounded-xl flex justify-between items-center shadow-sm"
-                            onClick={() => SongInPlaylist(playlist.id)}
                         >
                             <div className="p-1">
                                 <div className="font-bold flex items-center gap-2">
@@ -184,7 +176,7 @@ export default function Playlist({ playlistList }: { playlistList: PlayListData[
                                 <p className="text-sm text-text-600">Created at {playlist.created_at}</p>
                             </div>
                             <div className="flex items-center gap-2">
-                                <i onClick={(e) =>{e.stopPropagation();  SharePlaylist()}} className="bi bi-share text-xl text-accent-500 cursor-pointer"></i>
+                                <i onClick={() => SharePlaylist()} className="bi bi-share text-xl text-accent-500 cursor-pointer"></i>
                                 <img src={`/image/${playlist.image_id}`} alt="Playlist" className="w-12 h-12 bg-background-200 rounded-full" />
                             </div>
                         </div>

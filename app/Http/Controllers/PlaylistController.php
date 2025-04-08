@@ -67,11 +67,7 @@ class PlaylistController extends Controller
      */
     public function show(Playlist $playlist)
     {
-        $playlist->load(['user', 'songs']);
-
-        return Inertia::render('playlist/playlistsongs', [
-            'playlist' => $playlist
-        ]);
+        //
     }
 
     /**
@@ -87,21 +83,22 @@ class PlaylistController extends Controller
      */
     public function update(UpdatePlaylistRequest $request, Playlist $playlist)
     {
-        $file = $request->file('image');
+        $data = [];
 
-        $randomName = uniqid(). '-' . $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
+        if ($request->has('name')) {
+            $data['name'] = $request->validated('name');
+        }
 
-        // Upload to s3
-        Storage::disk('s3')->put('playlist/' . $randomName, $file->get());
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $randomName = uniqid() . '-' . $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
 
-        $image = Image::create([
-            's3_url' => "playlist/{$randomName}"
-        ]);
+            Storage::disk('s3')->put("playlist/{$randomName}", $file->get());
+            $image = Image::create(['s3_url' => "playlist/{$randomName}"]);
 
-        $playlist->update([
-            'name' => $request->validated('name'),
-            'image_id' => $image->id
-        ]);
+            $data['image_id'] = $image->id;
+        }
+        $playlist->update($data);
 
         return redirect()->route('playlist.index');
     }
