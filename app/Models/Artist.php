@@ -9,7 +9,7 @@ class Artist extends Model
     protected $fillable = [
         'spotify_id',
         'name',
-        'image_id'
+        'image_url'
     ];
 
     public function albums()
