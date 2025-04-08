@@ -142,7 +142,7 @@ class SpotifyController extends Controller
 
         // Randomly select one track from the list
         $tracks = $data['tracks']['items'];
-        $randomTrack = $tracks[array_rand($tracks)];
+        $randomTrack = $tracks[array_rand($tracks)];    
 
         // Get the names of the artists
         $artistNames = collect($randomTrack['artists'])->pluck('name')->toArray();
@@ -150,7 +150,7 @@ class SpotifyController extends Controller
         return response()->json([
             'track' => $randomTrack['name'],
             'artists' => implode(', ', $artistNames),
-            'url' => $randomTrack['external_urls']['spotify']
+            'url' => $randomTrack['uri']
         ]);
     }
 
