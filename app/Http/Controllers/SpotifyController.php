@@ -70,22 +70,27 @@ class SpotifyController extends Controller
         return response()->json([
             'track_title' => $randomTrack['name'],
             'track_artist_id' => $randomTrack['artists'][0]['id'],
-            'genre_id' => $artistDetails['genres'] ?? [],
+            'genre_id' =>  [],
             'track_year' => substr($randomTrack['album']['release_date'], 0, 4),
             'track_duration' => $randomTrack['duration_ms'],
             'track_cover_url' => $randomTrack['album']['images'][0]['url'],
             'track_album_id' => $randomTrack['album']['id'],
+            'spotify_id' =>$randomTrack['id'],
 
             'artist_id' => $randomTrack['artists'][0]['id'],
             'artist_name' => $randomTrack['artists'][0]['name'],
             'artist_image_url' => $artistDetails['images'][0]['url'] ?? null,
 
+            'artists' => implode(', ', $artistNames),
+            'url' => $randomTrack['external_urls']['spotify'],
+
             'album_id' => $randomTrack['album']['id'],
             'album_title' => $randomTrack['album']['name'],
             'album_artist_id' => $randomTrack['album']['artists'][0]['id'],
             'album_release_date' => $randomTrack['album']['release_date'],
-            'album_cover_url' => $randomTrack['album']['images'][0]['url']
+            'album_cover_url' => $randomTrack['album']['images'][0]['url'],
 
+            'genre_name' => $artistDetails['genres'] ?? [],
         ]);
     }
 

@@ -3,7 +3,7 @@ import { useAtom } from 'jotai';
 import Authenticated from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { api, currentTrackAtom } from '@/utils';
-import { PauseFill, PlayFill } from 'react-bootstrap-icons';
+import { Icon1Circle, PauseFill, PlayFill, Plus } from 'react-bootstrap-icons';
 import { toast } from 'react-toastify';
 import { Dropdown } from 'react-bootstrap';
 import axios from 'axios';
@@ -29,12 +29,27 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
     // Other UI states (playlist dropdown etc).
     const [showDropDown, setShowDropDown] = useState(false);
     const [playlist, setPlaylist] = useState<any[]>([]);
-    const [playlistId, setPlaylistId] = useState<number | undefined>(undefined);
-    const [songId, setSongId] = useState<number | undefined>(undefined);
+    const [playlistId, setPlaylistId] = useState<any>();
+    const [trackData,setTrackData] = useState<any>();
+    const [readyToPost, setReadyToPost] = useState(false);
+
 
     const { data, setData, post, processing, errors, reset } = useForm({
-        playlist_id: '',
-        song_id: ''
+        album_id: "",
+        album_name: "",
+        album_release_date:"",
+        album_cover_url:"",
+        artist_id: "",
+        artist_name: " ",
+        image_url: " ",
+        cover_url: "",
+        duration: "",
+        spotify_id: "",
+        title: "",
+        year: "",
+        genre_id: "",
+        genre_name:[],
+      
     });
 
     // Toggle dropdown
@@ -44,14 +59,109 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
 
     useEffect(() => {
         setPlay(true);
-     }, [uris]);
+    }, [uris]);
 
     // Add to playlist
-    const addToPlaylist = (id: number) => {
-        setPlaylistId(id);
-        console.log("playlistId", id);
+    const addData = (currentPlaylistId: number) => {
+        console.log("playlistId", playlistId);
+
+        if (!trackData) {
+            toast.error("Geen track geladen.");
+            return;
+        }
+        const songId = trackData.url.split('/track/')[1];
+
+    setData({
+        album_id: trackData.album_id,
+        album_name: trackData.album_title,
+        album_release_date: trackData.album_release_date,
+        album_cover_url: trackData.album_cover_url,
+        artist_id: trackData.artist_id,
+        artist_name: trackData.artist_name,
+        image_url: trackData.artist_image_url,
+        cover_url: trackData.track_cover_url,
+        duration: trackData.track_duration,
+        spotify_id: trackData.url.split('/track/')[1],
+        title: trackData.track_title,
+        year: trackData.track_year,
+        genre_id: trackData.genre_id[0] ?? 'onbekend',
+        genre_name: trackData.genre_name,
+       
+    });
+
+    setPlaylistId(currentPlaylistId);
+    setReadyToPost(true); // trigger effect
+
+    // createSong();
+    // addToPlaylist(playlistId);
         // You can: post(route('playlistsong.store'), { playlist_id: id, song_id: songId })
     };
+
+    useEffect(() => {
+        if (!readyToPost || !trackData || !playlistId) return;
+    
+        const songId = trackData.url.split('/track/')[1];
+    
+        post(route('song.store'), {
+            onSuccess: () => {
+                toast.success('Track succesvol opgeslagen!');
+                reset();
+    
+                axios.post(route('playlistsong.store'), {
+                    playlist_id: playlistId,
+                    song_id: songId,
+                }).then(() => {
+                    toast.success("Toegevoegd aan playlist!");
+                    setReadyToPost(false); // reset trigger
+                }).catch((error) => {
+                    console.error(error);
+                    toast.error('Fout bij toevoegen aan playlist.');
+                    setReadyToPost(false);
+                });
+            },
+            onError: (error) => {
+                console.error(error);
+                toast.error('Er ging iets mis bij het opslaan.');
+                setReadyToPost(false);
+            }
+        });
+    }, [readyToPost]);
+    
+    
+    // const createSong = () => {
+    //     post(route('song.store'), {
+    //         onSuccess: () => {
+    //             reset();
+    //             toast.success('Track succesvol opgeslagen!');
+    //         },
+    //         onError: (error) => {
+    //             console.error(error);
+    //             toast.error('Er ging iets mis bij het opslaan.');
+    //         }
+    //     });
+    // };
+
+    // const addToPlaylist = (playlistId: number) => {
+    //     const songId = trackData.url.split('/track/')[1];
+
+    //     if (!playlistId || !songId) {
+    //         toast.error('Playlist ID or Song ID is missing.');
+    //         return;
+    //     }
+
+
+    //   axios.post(route('playlistsong.store'),{
+    //     playlist_id: playlistId,
+    //     song_id: songId,
+    //         onSuccess: () => {
+    //             reset();
+    //         },
+    //         onError: (error) => {
+    //             console.error(error);
+    //             toast.error('Er ging iets mis bij het opslaan in de playlist.');
+    //         }
+    //     })
+    // }
 
     const loadPlaylists = async () => {
         try {
@@ -64,7 +174,9 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
 
     useEffect(() => {
         loadPlaylists();
-    }, []);
+        console.log("trackdata",trackData)
+        console.log("currentplaylistId",playlistId)
+    }, [trackData]);
 
     // Toggle play/pause. The custom button simply toggles our play state.
     const handleTogglePlay = () => {
@@ -76,6 +188,8 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
         api.get('/spotify/random').then(response => {
             if (response.status === 200) {
                 console.log(response.data);
+                const track = response.data;
+                setTrackData(track);
                 // Expecting response.data.url to be a valid Spotify track URI (e.g. "spotify:track:...")
                 setUris([response.data.url]);
             }
@@ -115,7 +229,14 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
                     callback={handlePlayerCallback}
                     autoPlay={true}
                     components={{
-                        leftButton: <PrimaryButton onClick={() => getRandomTrack()}>Get random track</PrimaryButton>
+                        leftButton: <PrimaryButton onClick={() => getRandomTrack()}>Get random track</PrimaryButton>,
+                        rightButton: (
+                            <div className="flex items-center space-x-2">
+                                <button onClick={toggleDropdown} className="p-2 bg-gray-800 rounded-full">
+                                    <Plus color="white" />
+                                </button>
+                            </div>
+                        )
                     }}
                     styles={{
                         activeColor: '#888877',
@@ -129,6 +250,24 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
             </div>
             {/* Spotify Web Playback Component */}
 
+            {/* Dropdown Menu - Outside the Player */}
+            {showDropDown && (
+                <div className="absolute bottom-[90px] inset-x-0 flex justify-center z-50">
+                <div className="bg-white rounded-xl shadow-lg border w-64 p-2 space-y-2">
+                    {playlist.map((item) => (
+                        <button
+                            key={item.id}
+                            onClick={() => addData(item.id)}
+                            className="w-full text-left px-4 py-2 rounded-lg bg-gray-100 hover:bg-purple-200 transition-all"
+                        >
+                            Add to <span className="font-semibold">{item.name}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+            )}
+
         </div>
+
     );
 }

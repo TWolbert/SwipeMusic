@@ -23,7 +23,8 @@ export default function PlaylistView({ playlist }: { playlist: Playlist }) {
         spotify_id: "",
         title: "",
         year: "",
-        genre_id: ""
+        genre_id: "",
+       
 
     });
 
@@ -32,45 +33,7 @@ export default function PlaylistView({ playlist }: { playlist: Playlist }) {
         //in songs[] zit de spotify_id
     }
 
-    const createSong = (trackId) => {
-        post(route('song.store'), {
-            onSuccess: (succes) => {
-                reset();
-                console.log(succes)
-            },
-            onError: (error) => {
-                console.log(error)
-            }
-        })
-    }
-
-    const getTrackInfo = async (trackId) => {
-        try {
-            const response = await axios.get(`/spotify/track/${trackId}`);
-            const { track, album, artist } = response.data;
-            console.log(response.data);
-            setData({
-                album_id: track.album_id,
-                album_name: track.album_name,
-                album_release_date: album.release_date?.substring(0,4),
-                album_cover_url:album.cover_url,
-
-                artist_id: track.artist_id,
-                artist_name: track.artist_name,
-                image_url: artist.image_url,
-
-                spotify_id: track.spotify_id,
-                title: track.title,
-                cover_url: track.cover_url,
-                duration: track.duration,
-                year: track.year,
-                genre_id: "1",
-            })
-        } catch (error) {
-            console.error('Error fetching track info:', error);
-        }
-    };
-
+   
     return (
         <AuthenticatedLayout header={
             <h2 className="text-xl font-semibold leading-tight text-text-800 dark:text-text-200">
@@ -99,13 +62,6 @@ export default function PlaylistView({ playlist }: { playlist: Playlist }) {
                     </div>
                 )}
             </div>
-            <button onClick={() => getTrackInfo('44A0o4jA8F2ZF03Zacwlwx')}>
-                info songs
-            </button>
-
-            <button onClick={() => createSong('44A0o4jA8F2ZF03Zacwlwx')}>
-                save song
-            </button>
         </AuthenticatedLayout>
     )
 }

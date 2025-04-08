@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePlaylistSongRequest;
 use App\Http\Requests\UpdatePlaylistSongRequest;
 use App\Models\PlaylistSong;
+use Illuminate\Support\Facades\Log;
 
 class PlaylistSongController extends Controller
 {
@@ -29,7 +30,15 @@ class PlaylistSongController extends Controller
      */
     public function store(StorePlaylistSongRequest $request)
     {
-        //
+        $playlistId = $request->input('playlist_id');
+        $songId = $request->input('song_id');
+
+        Log::info("playlist_id: $playlistId, song_id: $songId");
+
+       PlaylistSong::firstOrCreate([
+        'playlist_id' => $playlistId,  
+        'song_id' => $songId
+       ]);
     }
 
     /**

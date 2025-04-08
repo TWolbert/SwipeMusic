@@ -11,7 +11,7 @@ class StorePlaylistSongRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return !is_null(auth()->user());
     }
 
     /**
