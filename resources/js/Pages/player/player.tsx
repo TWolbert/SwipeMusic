@@ -10,6 +10,7 @@ import axios from 'axios';
 import { useForm } from "@inertiajs/react";
 import SpotifyWebPlayer from 'react-spotify-web-playback';
 import PrimaryButton from '@/Components/PrimaryButton';
+import GenreDialog from './components/GenreDialog';
 
 // Helper to format ms into mm:ss
 const formatMsToMinutesAndSeconds = (ms: number): string => {
@@ -75,8 +76,15 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
     const getRandomTrack = () => {
         api.get('/spotify/random').then(response => {
             if (response.status === 200) {
-                console.log(response.data);
-                // Expecting response.data.url to be a valid Spotify track URI (e.g. "spotify:track:...")
+                setUris([response.data.url]);
+            }
+        });
+    };
+
+    const getRandomTrackByGenre = (genre: string) => {
+        api.get(`/spotify/random/${genre}`).then(response => {
+            if (response.status === 200) {
+                console.log("response", response.data);
                 setUris([response.data.url]);
             }
         });
@@ -115,7 +123,7 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
                     callback={handlePlayerCallback}
                     autoPlay={true}
                     components={{
-                        leftButton: <PrimaryButton onClick={() => getRandomTrack()}>Get random track</PrimaryButton>
+                        leftButton: <GenreDialog handler={getRandomTrackByGenre} />,    
                     }}
                     styles={{
                         activeColor: '#888877',
