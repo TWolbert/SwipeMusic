@@ -10,6 +10,7 @@ import axios from 'axios';
 import { useForm } from "@inertiajs/react";
 import SpotifyWebPlayer from 'react-spotify-web-playback';
 import PrimaryButton from '@/Components/PrimaryButton';
+import GenreDialog from './components/GenreDialog';
 
 // Helper to format ms into mm:ss
 const formatMsToMinutesAndSeconds = (ms: number): string => {
@@ -82,6 +83,14 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
         });
     };
 
+    const getRandomTrackByGenre = (genre: string) => {
+        api.get(`/spotify/random/${genre}`).then(response => {
+            if (response.status === 200) {
+                setUris([response.data.url]);
+            }
+        });
+    };
+
     // The progress timeline and time display below is based on the currentTrack state.
     // With react-spotify-web-playback you can extract track details in the callback.
     // Here we assume that the SpotifyWebPlayer callback returns a state with isPlaying and track information.
@@ -115,7 +124,7 @@ export function Player({ auth }: { auth: PageProps['auth'] }) {
                     callback={handlePlayerCallback}
                     autoPlay={true}
                     components={{
-                        leftButton: <PrimaryButton onClick={() => getRandomTrack()}>Get random track</PrimaryButton>
+                        leftButton: <GenreDialog handler={getRandomTrackByGenre} />,
                     }}
                     styles={{
                         activeColor: '#888877',
