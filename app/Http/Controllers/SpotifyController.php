@@ -154,6 +154,93 @@ class SpotifyController extends Controller
         ]);
     }
 
+    public function getTrackInfo($trackId)
+    {
+        // Vervang dit met je eigen access token
+        $accessToken = SpotifyUserData::where('user_id', Auth::id())->value('spotify_token');
+        if (!$accessToken) {
+            return response()->json(['error' => 'Spotify access token not configured.'], 500);
+        }
+
+        // Verzend een GET verzoek naar de Spotify API om informatie over een track op te halen
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $accessToken,
+        ])->get("https://api.spotify.com/v1/tracks/{$trackId}");
+
+        // Controleer of het verzoek succesvol was
+        if ($response->failed()) {
+            return response()->json(['error' => 'Spotify API request failed'], 500);
+        }
+
+        $track = $response->json();
+
+        // Get the artistId and albumId from the track data
+        $artistId = $track['artists'][0]['id'] ?? null;
+        $albumId = $track['album']['id'] ?? null;
+    
+        // 2. Haal artiest-informatie op
+        $artist = null;
+        $artistImageUrl = null;
+        if ($artistId) {
+            $artistResponse = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $accessToken,
+            ])->get("https://api.spotify.com/v1/artists/{$artistId}");
+    
+            if ($artistResponse->ok()) {
+                $artist = $artistResponse->json();
+                $artistImageUrl = $artist['images'][0]['url'] ?? null;
+            }
+        }
+    
+        // 3. Haal album-informatie op
+        $album = null;
+        if ($albumId) {
+            $albumResponse = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $accessToken,
+            ])->get("https://api.spotify.com/v1/albums/{$albumId}");
+    
+            if ($albumResponse->ok()) {
+                $album = $albumResponse->json();
+            }
+        }
+    
+        // Haal de gegevens uit de API response
+        $track = $response->json();
+
+        // Geef de gegevens terug in een JSON response
+        return response()->json([
+            'track' => [
+                'spotify_id' => $track['id'],
+                'title' => $track['name'],
+                'artist_id' => $artistId,
+                'artist_name' => $track['artists'][0]['name'] ?? 'Onbekend',
+                'album_id' => $albumId,
+                'album_name' => $track['album']['name'] ?? 'Onbekend',
+                'year' => substr($track['album']['release_date'] ?? '', 0, 4),
+                'duration' => $track['duration_ms'],
+                'cover_url' => $track['album']['images'][0]['url'] ?? null,
+            ],
+            'artist' => [
+                'id' => $artist['id'] ?? null,
+                'name' => $artist['name'] ?? null,
+                'genres' => $artist['genres'] ?? [],
+                'image_url' => $artistImageUrl,
+                'popularity' => $artist['popularity'] ?? null,
+                'followers' => $artist['followers']['total'] ?? null,
+            ],
+            'album' => [
+                'id' => $album['id'] ?? null,
+                'name' => $album['name'] ?? null,
+                'release_date' => $album['release_date'] ?? null,
+                'total_tracks' => $album['total_tracks'] ?? null,
+                'cover_url' => $album['images'][0]['url'] ?? null,
+                'label' => $album['label'] ?? null,
+                'genres' => $album['genres'] ?? [],
+            ]
+        ]);
+    }
+    
+   
     /**
      * Store a newly created resource in storage.
      */

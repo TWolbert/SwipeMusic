@@ -11,7 +11,7 @@ class StoreSongRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return !is_null(auth()->user());
     }
 
     /**
@@ -22,7 +22,14 @@ class StoreSongRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'spotify_id' => ['required','string'],
+            'title' => ['required','string'],
+            'artist_id' => ['required','string'],
+            'genre_id' => ['required','string'],
+            'year' => ['required','integer'],
+            'duration' => ['required','integer'],
+            'cover_url' => ['required','string'],
+            'album_id' => ['required','string'],
         ];
     }
 }
