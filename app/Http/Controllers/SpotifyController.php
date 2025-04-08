@@ -9,10 +9,7 @@ use Illuminate\Support\Facades\Http;
 
 class SpotifyController extends Controller
 {
-    public function index()
-    {
-
-    }
+    public function index() {}
 
     public function disconnect()
     {
@@ -61,13 +58,34 @@ class SpotifyController extends Controller
         $tracks = $data['tracks']['items'];
         $randomTrack = $tracks[array_rand($tracks)];
 
+        // Get the artist_image_url 
+        $artistId = $randomTrack['artists'][0]['id'];
+        $artistDetailsResponse = Http::withToken($accessToken)->get("https://api.spotify.com/v1/artists/{$artistId}");
+        $artistDetails = $artistDetailsResponse->json();
+
+
         // Get the names of the artists
         $artistNames = collect($randomTrack['artists'])->pluck('name')->toArray();
         // Return the track details as JSON
         return response()->json([
-            'track' => $randomTrack['name'],
-            'artists' => implode(', ', $artistNames),
-            'url' => $randomTrack['uri']
+            'track_title' => $randomTrack['name'],
+            'track_artist_id' => $randomTrack['artists'][0]['id'],
+            'genre_id' => $artistDetails['genres'] ?? [],
+            'track_year' => substr($randomTrack['album']['release_date'], 0, 4),
+            'track_duration' => $randomTrack['duration_ms'],
+            'track_cover_url' => $randomTrack['album']['images'][0]['url'],
+            'track_album_id' => $randomTrack['album']['id'],
+
+            'artist_id' => $randomTrack['artists'][0]['id'],
+            'artist_name' => $randomTrack['artists'][0]['name'],
+            'artist_image_url' => $artistDetails['images'][0]['url'] ?? null,
+
+            'album_id' => $randomTrack['album']['id'],
+            'album_title' => $randomTrack['album']['name'],
+            'album_artist_id' => $randomTrack['album']['artists'][0]['id'],
+            'album_release_date' => $randomTrack['album']['release_date'],
+            'album_cover_url' => $randomTrack['album']['images'][0]['url']
+
         ]);
     }
 
@@ -86,9 +104,9 @@ class SpotifyController extends Controller
         $response = Http::asForm()->withHeaders([
             'Authorization' => 'Basic ' . $authHeader,
         ])->post($url, [
-                    'grant_type' => 'refresh_token',
-                    'refresh_token' => $refreshToken,
-                ]);
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken,
+        ]);
 
         // Check if the request was successful.
         if ($response->successful()) {
@@ -177,7 +195,7 @@ class SpotifyController extends Controller
         // Get the artistId and albumId from the track data
         $artistId = $track['artists'][0]['id'] ?? null;
         $albumId = $track['album']['id'] ?? null;
-    
+
         // 2. Haal artiest-informatie op
         $artist = null;
         $artistImageUrl = null;
@@ -185,25 +203,25 @@ class SpotifyController extends Controller
             $artistResponse = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $accessToken,
             ])->get("https://api.spotify.com/v1/artists/{$artistId}");
-    
+
             if ($artistResponse->ok()) {
                 $artist = $artistResponse->json();
                 $artistImageUrl = $artist['images'][0]['url'] ?? null;
             }
         }
-    
+
         // 3. Haal album-informatie op
         $album = null;
         if ($albumId) {
             $albumResponse = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $accessToken,
             ])->get("https://api.spotify.com/v1/albums/{$albumId}");
-    
+
             if ($albumResponse->ok()) {
                 $album = $albumResponse->json();
             }
         }
-    
+
         // Haal de gegevens uit de API response
         $track = $response->json();
 
@@ -239,8 +257,8 @@ class SpotifyController extends Controller
             ]
         ]);
     }
-    
-   
+
+
     /**
      * Store a newly created resource in storage.
      */

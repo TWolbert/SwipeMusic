@@ -11,16 +11,19 @@ export default function PlaylistView({ playlist }: { playlist: Playlist }) {
     console.log("playlist", playlist);
 
     const { data, setData, post, errors, reset } = useForm({
-        album_id: "1R6MIxBiQensgzDlDes0yT",
-        album_name: "Je te laisserai des mots",
-        artist_id: "7bPs6jf983f0bjRAt1yxDM",
-        artist_name: "Patrick Watson",
-        cover_url: "https://i.scdn.co/image/ab67616d0000b2738ea92a85c492af8a38750549",
-        duration: "160853",
-        spotify_id: "44A0o4jA8F2ZF03Zacwlwx",
-        title: "Je te laisserai des mots",
-        year: "2010",
-        genre_id: "1"
+        album_id: "",
+        album_name: "",
+        album_release_date:"",
+        album_cover_url:"",
+        artist_id: "",
+        artist_name: " ",
+        image_url: " ",
+        cover_url: "",
+        duration: "",
+        spotify_id: "",
+        title: "",
+        year: "",
+        genre_id: ""
 
     });
 
@@ -49,12 +52,17 @@ export default function PlaylistView({ playlist }: { playlist: Playlist }) {
             setData({
                 album_id: track.album_id,
                 album_name: track.album_name,
+                album_release_date: album.release_date?.substring(0,4),
+                album_cover_url:album.cover_url,
+
                 artist_id: track.artist_id,
                 artist_name: track.artist_name,
-                cover_url: track.cover_url,
-                duration: track.duration,
+                image_url: artist.image_url,
+
                 spotify_id: track.spotify_id,
                 title: track.title,
+                cover_url: track.cover_url,
+                duration: track.duration,
                 year: track.year,
                 genre_id: "1",
             })
