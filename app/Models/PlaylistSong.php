@@ -18,6 +18,6 @@ class PlaylistSong extends Model
 
     public function song()
     {
-        return $this->belongsTo(Song::class);
+        return $this->belongsTo(Song::class, 'song_id', 'spotify_id');
     }
 }

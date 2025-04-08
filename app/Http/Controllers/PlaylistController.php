@@ -67,7 +67,15 @@ class PlaylistController extends Controller
      */
     public function show(Playlist $playlist)
     {
-        $playlist->load(['user', 'songs']);
+        $playlist->load([
+        'user',
+        'songs.song',
+        'songs.song.artist', // Als je artiestinformatie van een nummer nodig hebt
+        'songs.song.album',  // Als je albuminformatie van een nummer nodig hebt
+        'songs.song.genre' 
+    
+    ]);
+    
 
         return Inertia::render('playlist/playlistsongs', [
             'playlist' => $playlist
